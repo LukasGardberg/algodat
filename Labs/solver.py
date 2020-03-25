@@ -1,9 +1,14 @@
 from pathlib import Path
 import numpy as np
 
-entries = Path(r'C:\Users\Lukas\PycharmProjects\algodat\EDAF05-labs-public-master\1stablemarriage\data\secret')
 
-input_file = entries / '0testsmall.in'
+# Det här är ett dåligt sätt eftersom vi har olika filsökvägar på olika maskiner
+#entries = Path(r'C:\Users\Lukas\PycharmProjects\algodat\EDAF05-labs-public-master\1stablemarriage\data\secret)
+
+# Det här är ett bättre sätt
+entries = Path(__file__).parent.parent / 'EDAF05-labs-public-master' / '1stablemarriage' / 'data' / 'secret'
+
+input_file = entries / "0testsmall.in"
 input = open(input_file, 'r')
 
 # number of men and women
