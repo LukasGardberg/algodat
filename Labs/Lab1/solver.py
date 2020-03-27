@@ -1,5 +1,4 @@
 from pathlib import Path
-import numpy as np
 
 # Det här är ett dåligt sätt eftersom vi har olika filsökvägar på olika maskiner
 #entries = Path(r'C:\Users\Lukas\PycharmProjects\algodat\EDAF05-labs-public-master\1stablemarriage\data\secret)
@@ -15,7 +14,6 @@ n = int(input.readline())
 
 men = [{'preferences': [], 'proposals': 0, 'is_engaged': False} for i in range(n)]
 women = [{'preferences': [], 'partner': 0, 'is_engaged': False} for i in range(n)]
-
 
 lines = input.readlines()
 
@@ -33,5 +31,5 @@ for line in lines:
 
         women[index]['preferences'] = w_pref
     else:
-        # store array so that man i has ranking arr[i]
+        # for men store array as normal
         men[index]['preferences'] = temp_arr[1:]
