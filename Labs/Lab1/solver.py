@@ -1,8 +1,7 @@
 from pathlib import Path
-import numpy as np
 
 # Det här är ett dåligt sätt eftersom vi har olika filsökvägar på olika maskiner
-#entries = Path(r'C:\Users\Lukas\PycharmProjects\algodat\EDAF05-labs-public-master\1stablemarriage\data\secret)
+# entries = Path(r'C:\Users\Lukas\PycharmProjects\algodat\EDAF05-labs-public-master\1stablemarriage\data\secret)
 
 # Det här är ett bättre sätt
 entries = Path(__file__).parent.parent.parent / 'EDAF05-labs-public-master' / '1stablemarriage' / 'data' / 'secret'
@@ -20,13 +19,13 @@ lines = input.readlines()
 
 # first occurring index is a woman
 for line in lines:
-    temp_arr = np.fromstring(line, dtype=int, sep=' ')
+    temp_arr = [int(x) for x in line.split()]  # så här slipper man numpy
     index = temp_arr[0] - 1
     print(line)
     # Determine if woman or man
-    if women[index]['preferences'] == []:
+    if not women[index]['preferences']:
         # for women store inverted array
-        w_pref = [None] * n
+        w_pref = [0] * n
         for i in range(1, n+1):
             w_pref[temp_arr[i] - 1] = i
 
