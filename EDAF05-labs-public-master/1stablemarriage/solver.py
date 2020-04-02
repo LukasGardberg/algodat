@@ -1,21 +1,10 @@
-# from pathlib import Path
 import sys
-#
-# entries = Path(__file__).parent.parent.parent / 'EDAF05-labs-public-master' / '1stablemarriage' / 'data' / 'secret'
-#
-# input_file = entries / "0testsmall.in"
-# text_in = open(input_file, 'r')
-#
-# # number of men and women
-# n = int(text_in.readline())
-#
-# lines = text_in.readlines()
 
 n = int(sys.stdin.readline())
 
 lines = sys.stdin.readlines()
 
-men = [{'preferences': [], 'proposals': 0, 'is_engaged': False} for i in range(n)]
+men = [{'preferences': [], 'proposals': 0} for i in range(n)]
 women = [{'preferences': [], 'partner': 0, 'is_engaged': False} for i in range(n)]
 
 # first occurring index is a woman
@@ -26,7 +15,7 @@ for line in lines:
     # Determine if woman or man
     if not women[index]['preferences']:
         # for women store inverted array
-        w_pref = [0] * n
+        w_pref = [0 for i in range(n)]
         for i in range(1, n+1):
             w_pref[temp_arr[i] - 1] = i - 1
 
@@ -57,7 +46,6 @@ while p:
 
     elif current_woman['preferences'][m_index] < current_woman['preferences'][current_woman['partner']]:
         # w prefers current man over husband, add husband to p and make w and current man a pair
-
         p.append(current_woman['partner'])
         current_woman['partner'] = m_index
 
@@ -66,7 +54,3 @@ while p:
 
 for i in range(n):
     print(women[i]['partner'] + 1)
-
-
-
-
