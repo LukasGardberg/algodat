@@ -2,22 +2,23 @@ import sys
 
 n = int(sys.stdin.readline())
 
-lines = sys.stdin.readlines()
+lines = ' '.join([line.rstrip() for line in sys.stdin.readlines()])
+arr = [int(x) for x in lines.split()]
 
 men = [{'preferences': [], 'proposals': 0} for i in range(n)]
-women = [{'preferences': [], 'partner': 0, 'is_engaged': False} for i in range(n)]
+women = [{'preferences': [], 'partner': 0, 'is_engaged': False} for j in range(n)]
 
 # first occurring index is a woman
-for line in lines:
-    temp_arr = [int(x) for x in line.split()]
+for i in range(0, len(arr), n+1):
+    temp_arr = arr[i:i+n+1]
     index = temp_arr[0] - 1
 
     # Determine if woman or man
     if not women[index]['preferences']:
         # for women store inverted array
-        w_pref = [0 for i in range(n)]
-        for i in range(1, n+1):
-            w_pref[temp_arr[i] - 1] = i - 1
+        w_pref = [0 for x in range(n)]
+        for j in range(1, n+1):
+            w_pref[temp_arr[j] - 1] = j - 1
 
         women[index]['preferences'] = w_pref
     else:
