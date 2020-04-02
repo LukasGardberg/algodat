@@ -1,8 +1,9 @@
 import sys
+import time
 
 n = int(sys.stdin.readline())
-
-lines = ' '.join([line.rstrip() for line in sys.stdin.readlines()])
+t1 = time.time()
+lines = ' '.join(line.rstrip() for line in sys.stdin.readlines())
 arr = [int(x) for x in lines.split()]
 
 men = [{'preferences': [], 'proposals': 0} for i in range(n)]
@@ -26,6 +27,9 @@ for i in range(0, len(arr), n+1):
 
         men[index]['preferences'] = [x - 1 for x in temp_arr[1:]]
 
+
+print('Reading time: ', time.time() - t1)
+t2 = time.time()
 # Array (stack) of available men by index
 p = [x for x in range(n)]
 
@@ -53,5 +57,8 @@ while p:
     else:
         p.append(m_index)
 
-for i in range(n):
-    print(women[i]['partner'] + 1)
+
+sys.stdout.write('\n'.join(str(women[i]['partner'] + 1) for i in range(n)))
+sys.stdout.write('\n')
+
+print('Solving time: ', time.time() - t2)
