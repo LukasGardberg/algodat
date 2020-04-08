@@ -11,9 +11,9 @@ word_map = {}
 for i in range(N):
     word_map[sys.stdin.readline().strip()] = []
 
+
 def connected(word1, word2):
     # returns true if word1 has an edge to word2
-
     for char in word1[1:]:
         if char in word2:
             word2 = word2.replace(char, '', 1)
@@ -30,6 +30,10 @@ for word1 in word_map:
 
 
 def bfs(start, stop):
+    # if the words are the same then path_length is 0
+    if start == stop:
+        return 0
+
     visited = {start}
     q = [start]
     parents = {}
@@ -54,10 +58,10 @@ def bfs(start, stop):
 
     return 'Impossible'
 
+
 for _ in range(Q):
     line = sys.stdin.readline().split()
     start = line[0]
     stop = line[1]
 
     print(bfs(start, stop))
-
