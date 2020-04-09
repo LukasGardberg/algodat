@@ -1,19 +1,23 @@
 import sys
 
+# Solver for lab 2 in EDAF05
+
+# Read input
 line1 = sys.stdin.readline().split()
 
-N = int(line1[0])
-Q = int(line1[1])
+N = int(line1[0])   # Nbr of words
+Q = int(line1[1])   # Nbr queries
 
-# Read in words and store in nodes
+# Read in words and store in a (key, val) = (word, neighbors) map.
 word_map = {}
 
 for i in range(N):
     word_map[sys.stdin.readline().strip()] = []
 
 
+# Function to determine if two words should be connected
 def connected(word1, word2):
-    # returns true if word1 has an edge to word2
+    # returns true if word1 should have an edge to word2
     for char in word1[1:]:
         if char in word2:
             word2 = word2.replace(char, '', 1)
@@ -23,19 +27,22 @@ def connected(word1, word2):
     return True
 
 
+# Store the correct neighbors to each word
 for word1 in word_map:
     for word2 in word_map:
         if word1 != word2 and connected(word1, word2):
             word_map[word1].append(word2)
 
 
-def bfs(start, stop):
+# Breadth first search algorithm
+# input: start_w, stop_w words (string), returns: path_length (int) or 'Impossible'
+def bfs(start_w, stop_w):
     # if the words are the same then path_length is 0
-    if start == stop:
+    if start_w == stop_w:
         return 0
 
-    visited = {start}
-    q = [start]
+    visited = {start_w}
+    q = [start_w]
     parents = {}
     path_length = 1
 
@@ -47,10 +54,12 @@ def bfs(start, stop):
                 visited.add(neighbor)
                 q.append(neighbor)
                 parents[neighbor] = v
-                if neighbor == stop:
-                    temp_neighbor = stop
+                if neighbor == stop_w:
+                    # Found shortest
+                    temp_neighbor = stop_w
 
-                    while parents[temp_neighbor] != start:
+                    # Calc path length
+                    while parents[temp_neighbor] != start_w:
                         temp_neighbor = parents[temp_neighbor]
                         path_length += 1
 
@@ -59,6 +68,7 @@ def bfs(start, stop):
     return 'Impossible'
 
 
+# Read in queries and print result
 for _ in range(Q):
     line = sys.stdin.readline().split()
     start = line[0]
