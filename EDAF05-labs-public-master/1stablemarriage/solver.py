@@ -1,10 +1,24 @@
 import sys
-import time
+# import time
+
+# t_tot = time.time()
+
+# Read input
+
+# t_read = time.time()
 
 n = int(sys.stdin.readline())
-t1 = time.time()
-lines = ' '.join(line.rstrip() for line in sys.stdin.readlines())
-arr = [int(x) for x in lines.split()]
+
+lines = sys.stdin.read()
+
+# arr = [int(x) for x in lines.split()] # O(2n(n+1)) = O(n^2)
+arr = list(map(int, lines.split()))
+
+# t_read = time.time() - t_read
+
+# Store input
+
+# t_store = time.time()
 
 men = [{'preferences': [], 'proposals': 0} for i in range(n)]
 women = [{'preferences': [], 'partner': 0, 'is_engaged': False} for j in range(n)]
@@ -28,10 +42,13 @@ for i in range(0, len(arr), n+1):
         men[index]['preferences'] = [x - 1 for x in temp_arr[1:]]
 
 
-print('Reading time: ', time.time() - t1)
-t2 = time.time()
+# t_store = time.time() - t_store
 # Array (stack) of available men by index
 p = [x for x in range(n)]
+
+# Solve
+
+# t_solve = time.time()
 
 while p:
     m_index = p.pop()
@@ -58,7 +75,13 @@ while p:
         p.append(m_index)
 
 
+# t_solve = time.time() - t_solve
+
 sys.stdout.write('\n'.join(str(women[i]['partner'] + 1) for i in range(n)))
 sys.stdout.write('\n')
 
-print('Solving time: ', time.time() - t2)
+# print('Reading time: ', t_read)
+# print('Storing time: ', t_store)
+# print('Solving time: ', t_solve)
+# print('Total time: ', time.time() - t_tot)
+

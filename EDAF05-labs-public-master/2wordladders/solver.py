@@ -1,6 +1,8 @@
 import sys
+import time
 
 # Solver for lab 2 in EDAF05
+# Improvements: replace the word_map with a matrix and index words with integers instead.
 
 # Read input
 line1 = sys.stdin.readline().split()
@@ -75,3 +77,4 @@ for _ in range(Q):
     stop = line[1]
 
     print(bfs(start, stop))
+
