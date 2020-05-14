@@ -10,7 +10,6 @@ line1 = sys.stdin.readline().split()
 N = int(line1[0])  # Nbr of people
 M = int(line1[1])  # Nbr of edges
 
-# test_map = {}
 dists = defaultdict(list)
 
 # Store adjacent nodes and edge weights in map
@@ -40,6 +39,7 @@ t_makeheap = time.time() - t_makeheap
 
 t_solve = time.time()
 
+# Prim's algorithm
 while Q:
     # Pop nearest vertex from our MST
     dist, frm, to = heapq.heappop(Q)
@@ -57,9 +57,8 @@ while Q:
 
 t_solve = time.time() - t_solve
 
-print('reading time ', t_read)
-print('heap making time ', t_makeheap)
-print('solving time ', t_solve)
-
+# print('reading time ', t_read)
+# print('heap making time ', t_makeheap)
+# print('solving time ', t_solve)
 
 print(total_dist)
