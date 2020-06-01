@@ -8,9 +8,9 @@ n_edges = int(line1[1])
 flow_demand = int(line1[2])  # number of students
 n_routes = int(line1[3])
 
-capacities = defaultdict(list)
+neighbors = defaultdict(list)
 
-adj = [[-1 for _ in range(n_nodes)] for _ in range(n_nodes)]
+adj = [[0 for _ in range(n_nodes)] for _ in range(n_nodes)]
 
 # dictionary for node neighbors and capacity of edges
 for _ in range(n_edges):
@@ -20,14 +20,17 @@ for _ in range(n_edges):
     node2 = int(node2)
     capacity = int(capacity)
 
-    capacities[node1].append(node2)
-    capacities[node2].append(node1)
+    neighbors[node1].append(node2)
+    neighbors[node2].append(node1)
 
     # Store in adj. matrix
     adj[node1][node2] = adj[node2][node1] = capacity
 
 
 # BFS algorithm, node_dict assumed dictionary node_int: [(node_int, cap), ..]
+# input: node_dict, adjacency matrix.
+# output: array of indices of path, min_capacity along that path
+# OR false if no path was found.
 
 
 def bfs(node_dict, adj_matrix):
@@ -85,12 +88,29 @@ def bfs(node_dict, adj_matrix):
 
 
 def ford_fulk(node_dict, adj_matrix):
+    # create empty flow matrix
+    flow_matrix = [[0 for _ in range(n_nodes)] for _ in range(n_nodes)]
 
+    # duplicate adjacency matrix
+    cap_matrix = [[cap for cap in adj_matrix[row][:]] for row in range(len(adj_matrix))]
 
-    while temp_tuple := bfs(capacities, adj):
+    while temp_tuple := bfs(node_dict, cap_matrix):
         path = temp_tuple[0]
         min_cap = temp_tuple[1]
 
+        # Loop back through path and add flow
+        for index, node_from in enumerate(path[:len(path) - 1]):
+            # index starts at 1
+            node_to = path[index]
 
+            flow_matrix[node_from][node_to] += min_cap
+            # flow_matrix[node_to][node_from] += min_cap
 
+            # subtract flow from capacity
+            cap_matrix[node_from][node_to] -= min_cap
+            # add equal capacity (possible flow) in reverse direction
+            cap_matrix[node_to][node_from] += min_cap
 
+    # While loop exited, found max flow OR none
+    # Calculate max from into last node
+    # Loop through all flows that run into that node and add up?
