@@ -45,7 +45,7 @@ for i in range(n_edges):
 # OR false if no path was found.
 
 
-def bfs(node_dict, adj_matrix):
+def bfs():
     start_node = 0
     stop_node = n_nodes - 1
 
@@ -60,7 +60,7 @@ def bfs(node_dict, adj_matrix):
         current_node = q.pop(0)
 
         # Generator expression
-        gen = (neighbor for neighbor in node_dict[current_node] if adj_matrix[current_node][neighbor] > 0)
+        gen = (neighbor for neighbor in neighbors[current_node] if res_graph[current_node][neighbor] > 0)
 
         for neighbor in gen:
             # if neighbor has not been visited then add it to visited and append neighbor to q
@@ -80,10 +80,9 @@ def bfs(node_dict, adj_matrix):
                         path.insert(0, parents[temp_node])
 
                         # find min capacity along path
-                        temp_cap = adj_matrix[temp_node][parents[temp_node]]
+                        temp_cap = res_graph[parents[temp_node]][temp_node]
 
-                        if temp_cap < min_cap:
-                            min_cap = temp_cap
+                        min_cap = min(min_cap, temp_cap)
 
                         temp_node = parents[temp_node]
 
@@ -91,33 +90,26 @@ def bfs(node_dict, adj_matrix):
                     path.insert(0, start_node)
 
                     # Check last capacity to start node
-                    temp_cap = adj_matrix[temp_node][start_node]
+                    temp_cap = res_graph[start_node][temp_node]
 
-                    if temp_cap < min_cap:
-                        min_cap = temp_cap
+                    min_cap = min(min_cap, temp_cap)
 
                     return path, min_cap
     # No path was found
     return False
 
-# Ford Fulkeson algorithm, outputs max flow in graph node_dict
 
-
-def ford_fulk(node_dict, cap_matrix, curr_flow):
-    # create empty flow matrix
-    # flow_matrix = [[0 for _ in range(n_nodes)] for _ in range(n_nodes)]
-
-    # duplicate adjacency matrix (residual graph?)
-    # cap_matrix = [[cap for cap in adj_matrix[row][:]] for row in range(len(adj_matrix))]
-
+# Ford-Fulkerson algorithm, outputs max flow in graph node_dict
+def ford_fulk(curr_flow):
     max_flow = curr_flow
 
-    temp_tuple = bfs(node_dict, cap_matrix)
+    temp_tuple = bfs()
 
     while temp_tuple:
         path = temp_tuple[0]
         # print(path)
         min_cap = temp_tuple[1]
+        # print(min_cap)
 
         max_flow += min_cap
 
@@ -127,10 +119,10 @@ def ford_fulk(node_dict, cap_matrix, curr_flow):
             node_to = path[index + 1]
 
             # subtract flow from capacity
-            cap_matrix[node_from][node_to] -= min_cap
-            cap_matrix[node_to][node_from] += min_cap
+            res_graph[node_from][node_to] -= min_cap
+            res_graph[node_to][node_from] += min_cap
 
-        temp_tuple = bfs(node_dict, cap_matrix)
+        temp_tuple = bfs()
 
     return max_flow
 
@@ -145,7 +137,7 @@ for query in queries:
     res_graph[edges[query][1]][edges[query][0]] = 0
 
 # Do FF on graph with all requested edges removed
-current_flow = ford_fulk(neighbors, res_graph, 0)
+current_flow = ford_fulk(0)
 
 # Check if we are done
 if current_flow >= flow_demand:
@@ -171,7 +163,7 @@ else:
 
         # only run FF if we are able to achieve demanded flow
         if potential_capacity + current_flow >= flow_demand:
-            current_flow = ford_fulk(neighbors, res_graph, current_flow)
+            current_flow = ford_fulk(current_flow)
 
             # Reset potential capacity
             potential_capacity = 0
