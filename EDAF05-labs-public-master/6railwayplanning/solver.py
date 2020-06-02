@@ -1,5 +1,6 @@
 import sys
 from collections import defaultdict
+import time
 
 line1 = sys.stdin.readline().split()
 
@@ -10,10 +11,15 @@ n_routes = int(line1[3])
 
 neighbors = defaultdict(list)
 
+# Initialize adjacency matrix and residual graph
 adj = [[0 for _ in range(n_nodes)] for _ in range(n_nodes)]
+res_graph = [[0 for _ in range(n_nodes)] for _ in range(n_nodes)]
+
+edges = [[0, 0] for _ in range(n_edges)]
 
 # dictionary for node neighbors and capacity of edges
-for _ in range(n_edges):
+for i in range(n_edges):
+
     # Store in dict
     node1, node2, capacity = sys.stdin.readline().split()
     node1 = int(node1)
@@ -23,9 +29,15 @@ for _ in range(n_edges):
     neighbors[node1].append(node2)
     neighbors[node2].append(node1)
 
-    # Store in adj. matrix
+    # Store in edge list
+    edges[i] = [node1, node2]
+
+    # Store in adj. matrix (obs, elementen i grafen är pekar på samma?)
     adj[node1][node2] = adj[node2][node1] = capacity
 
+    # Store in residual graph (these are equal at the start)
+    res_graph[node1][node2] = capacity
+    res_graph[node2][node1] = capacity
 
 # BFS algorithm, node_dict assumed dictionary node_int: [(node_int, cap), ..]
 # input: node_dict, adjacency matrix.
@@ -37,6 +49,9 @@ def bfs(node_dict, adj_matrix):
     start_node = 0
     stop_node = n_nodes - 1
 
+    # print(adj_matrix)
+    # time.sleep(2)
+
     visited = {start_node}
     q = [start_node]
     parents = {}
@@ -45,7 +60,7 @@ def bfs(node_dict, adj_matrix):
         current_node = q.pop(0)
 
         # Generator expression
-        gen = (neighbor for neighbor in node_dict[current_node] if adj_matrix[neighbor][current_node] > 0)
+        gen = (neighbor for neighbor in node_dict[current_node] if adj_matrix[current_node][neighbor] > 0)
 
         for neighbor in gen:
             # if neighbor has not been visited then add it to visited and append neighbor to q
@@ -71,6 +86,7 @@ def bfs(node_dict, adj_matrix):
                             min_cap = temp_cap
 
                         temp_node = parents[temp_node]
+
                     # Add start node to path
                     path.insert(0, start_node)
 
@@ -87,30 +103,82 @@ def bfs(node_dict, adj_matrix):
 # Ford Fulkeson algorithm, outputs max flow in graph node_dict
 
 
-def ford_fulk(node_dict, adj_matrix):
+def ford_fulk(node_dict, cap_matrix, curr_flow):
     # create empty flow matrix
-    flow_matrix = [[0 for _ in range(n_nodes)] for _ in range(n_nodes)]
+    # flow_matrix = [[0 for _ in range(n_nodes)] for _ in range(n_nodes)]
 
-    # duplicate adjacency matrix
-    cap_matrix = [[cap for cap in adj_matrix[row][:]] for row in range(len(adj_matrix))]
+    # duplicate adjacency matrix (residual graph?)
+    # cap_matrix = [[cap for cap in adj_matrix[row][:]] for row in range(len(adj_matrix))]
 
-    while temp_tuple := bfs(node_dict, cap_matrix):
+    max_flow = curr_flow
+
+    temp_tuple = bfs(node_dict, cap_matrix)
+
+    while temp_tuple:
         path = temp_tuple[0]
+        # print(path)
         min_cap = temp_tuple[1]
 
-        # Loop back through path and add flow
-        for index, node_from in enumerate(path[:len(path) - 1]):
-            # index starts at 1
-            node_to = path[index]
+        max_flow += min_cap
 
-            flow_matrix[node_from][node_to] += min_cap
-            # flow_matrix[node_to][node_from] += min_cap
+        # Loop back through path and add flow
+        for index in range(len(path) - 1):
+            node_from = path[index]
+            node_to = path[index + 1]
 
             # subtract flow from capacity
             cap_matrix[node_from][node_to] -= min_cap
-            # add equal capacity (possible flow) in reverse direction
             cap_matrix[node_to][node_from] += min_cap
 
-    # While loop exited, found max flow OR none
-    # Calculate max from into last node
-    # Loop through all flows that run into that node and add up?
+        temp_tuple = bfs(node_dict, cap_matrix)
+
+    return max_flow
+
+
+# Read in queries
+queries = [int(sys.stdin.readline()) for _ in range(n_routes)]
+
+# Remove all edges in queries from res_graph
+for query in queries:
+    # Set capacity to 0 in both directions
+    res_graph[edges[query][0]][edges[query][1]] = 0
+    res_graph[edges[query][1]][edges[query][0]] = 0
+
+# Do FF on graph with all requested edges removed
+current_flow = ford_fulk(neighbors, res_graph, 0)
+
+# Check if we are done
+if current_flow >= flow_demand:
+    print(n_routes, current_flow)
+else:
+
+    n_removed = n_routes
+    potential_capacity = 0
+
+    # Loop through queries
+    for query in reversed(queries):
+        n_removed -= 1
+
+        node1 = edges[query][0]
+        node2 = edges[query][1]
+
+        cap_to_add = adj[node1][node2]
+
+        res_graph[node1][node2] = cap_to_add
+        res_graph[node2][node1] = cap_to_add
+
+        potential_capacity += cap_to_add
+
+        # only run FF if we are able to achieve demanded flow
+        if potential_capacity + current_flow >= flow_demand:
+            current_flow = ford_fulk(neighbors, res_graph, current_flow)
+
+            # Reset potential capacity
+            potential_capacity = 0
+            # print(current_flow)
+
+            # if we are done
+            if current_flow >= flow_demand:
+                break
+
+    print(n_removed, current_flow)
