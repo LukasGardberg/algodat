@@ -3,6 +3,8 @@ import heapq
 import time
 from collections import defaultdict
 
+# Implementation of Prim's algorithm
+
 t_read = time.time()
 
 line1 = sys.stdin.readline().split()
